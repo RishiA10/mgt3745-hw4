@@ -1,24 +1,32 @@
-# USERS.md
+# USERS
 
-Copy in from HW2, with revisions from feedback.
+Status: ACTIVE.
+# User research and jobs
 
-## Primary user
+## Interview synthesis
+Use participant codes (INT-01 and INT-02), dates, relevant circumstances, and approximately 15 minutes per interview. Ask about a specific recent experience. Summarize confirmed, contradicted, or uncertain findings; do not manufacture surprises. Keep sensitive raw notes out of the repository.
 
-*Name, role, goal, friction. Where they are when they use this.*
+### INT-01
+Participant code / relevant circumstance / date: INT-01 / Computer Science student with competitive dance experience / September 9, 2026
+What happened and the participant's workaround: The student described a situation where dance practice ran until around 3 AM before an exam at 12:30 PM the next day. He had already completed his homework but needed time to study for the exam and prepare for an upcoming interview. Because practice ended later than expected, he studied for hours afterward and took about a 1-hour nap. His usual workaround is to organize his work throughout the week and complete additional work over the weekend so that practice days have a lighter workload. 
+What was reported, what you observed, and what you infer: The student expected practice to run somewhat late but did not expect it to end at 3 AM. He reported that captains usually allow students to leave or miss practice for important academic or career obligations, although this time it was more difficult because of competition week. He also said that, while on time, he spent most of his free time on dance. The student already uses planning and communication with captains to manage conflicts. The scheduling problem may have uncertainty about how late practices actually run instead of just having no flexibility from team leadership. 
+Evidence that confirms, challenges, or leaves the framing uncertain: This shows that late practices can conflict with academic work and sleep. However, the idea that inflexible captains are the main cause is not completely true because the student said that captains generally accommodate important academic conflicts. It leaves it uncertain whether better advance scheduling alone would solve the problem because competition weeks can still require longer practices. 
 
-## Secondary user
+### INT-02
+Participant code / relevant circumstance / date: INT-02 / Medical student on a competitive dance team / September 9, 2026
+What happened and the participant's workaround: The student described a situation where dance practice was supposed to end around 2 AM but continued until 4 AM. He had an upcoming exam and studied throughout the week, but felt the need to study more because he wasn't confident. He handled the conflict by using caffeine, continuing to study, and getting about 5 hours of sleep. More recently, while preparing for the MCAT, he realized that going to late practice could interfere with his studying and sleep. He spoke with the captains and choreographers, who agreed to let him leave practice earlier. 
+What was reported, what you observed, and what you infer: The student knew the practice schedule, but practice lasted about 2 hours longer than expected. He reported that he could not leave because it was the week the team needed to submit its audition video. He also reported that there are not a lot of students who are pursuing medicine on the team, making it hard to find teammates who have the same problems and pressures. The student attempted to manage both commitments by preparing academically throughout the week and communicating directly with team leadership when his MCAT preparation became hard to balance with practice. Different academic circumstances may create different scheduling needs within the same dance team. A schedule that is manageable for some dancer members may create bigger problems for members with different academic demands. 
+Evidence that confirms, challenges, or leaves the framing uncertain: This interview shows that late practices can interfere with studying and sleep even when students prepare in advance. It also suggests that unexpected practice duration and differences in academic circumstances may contribute to the scheduling problem. However, it challenges the idea that team leadership is completely inflexible because the captains and choreographers allowed the student to leave earlier for MCAT preparation. It is still uncertain how a scheduling system should account for individual academic demands while still meeting important team deadlines. 
 
-*...*
+## Two job statements
+JOB-01: When I have important academic responsibilities during periods of late dance practices, I want to plan my schoolwork and practice commitments around each other, so I can stay committed to my team without sacrificing my academic performance or sleep. Evidence: INT-01 said he completes work ahead of time and organizes his workload throughout the week, but an unexpectedly late practice still left him with little sleep before an exam. 
+JOB-02: When I have an important academic obligation that conflicts with dance practice, I want to adjust my practice commitment so I can have enough time to prepare for my academic responsibilities. Evidence: INT-02 said that late practices interfered with his exam and MCAT preparation. After he explained his MCAT situation to the captains and choreographers, they allowed him to leave practice early. 
 
-## Journey
+## Two user profiles
+PROFILE-01: relevant role, circumstances, needs, constraints, and evidence IDs.
+Computer Science Student and competitive dance team member. Known: The student balances coursework, exams, interview preparation, and dance practices that can run later than expected. He needs to plan academic work around practices while maintaining enough time for sleep and studying. He currently organizes work throughout the week, completes additional work over the weekend, and lets the captains know about important conflicts. Competition weeks are less lenient with academic obligations and make it harder to leave or miss practice. Assumed: More reliable information about the expected duration of practice could help him plan his academic work around it and sleep a lot more effectively. Evidence: INT-01, JOB-01 
 
-```mermaid
-journey
-  title One session
-  section Arrive
-    Opens the page: 4: User
-  section Act
-    Adds an entry: 5: User
-  section Return
-    Comes back on another device: 3: User
-```
+PROFILE-02: relevant role, circumstances, needs, constraints, and evidence IDs.
+Medical student and competitive dance team member. Known: The student balances work, exams, MCAT preparation, and late dance practices. He needs enough time for studying and sleep while still meeting important team dance practices. He currently prepares academically throughout the week and communicates conflicts to captains and choreographers, who have let him leave practice early when necessary. Audition-related practices are a constraint because leaving early isn't always possible. He also reported that he has difficulty finding fellow teammates who are in the same boat as him because the team primarily consists of CS students. Assumed: His scheduling needs may change from those of other team members because of his academic pressures. Evidence: INT-02, JOB-02
+
+Use reported / observed / inferred labels. Earlier known / assumed labels are acceptable if the distinction is clear. Two exploratory interviews do not establish population prevalence.
