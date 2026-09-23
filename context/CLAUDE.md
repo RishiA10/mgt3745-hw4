@@ -1,26 +1,7 @@
-# CLAUDE.md
+# Canonical agent instructions
 
-Always-on instructions for any agent working in this repository. Read
-STANDARDS.md for the human version; this file restates it as rules an
-agent follows without being asked.
+Status: ACTIVE in Module 3. Read context/STANDARDS.md and the selected scope in FEATURES.md before editing. STANDARDS.md is normative; report and repair conflicting instruction wording.
 
-## Read first
+Use descriptive camelCase names and lexical scope. Keep HTML, CSS, and JavaScript separate. Explain significant reasons in comments. Use meaningful commit messages. Insert user text with textContent; do not use innerHTML for it. Associate form inputs, such as text fields and buttons, with clear labels. Verify expected behavior before claiming completion. Never invent interview evidence or test results. Leave preview files as previews.
 
-PROJECT.md, FEATURES.md, ARCHITECTURE.md, STANDARDS.md, TOOLS.md, STYLE.md.
-Do not read /curiosity unless asked.
-
-## Rules
-
-- Never use `innerHTML` with user input. Use `textContent`.
-- Never build SQL by concatenating strings. Use `prepare(...).bind(...)`.
-- Never write a credential, token, or key into any file in this repository.
-- Never add a dependency without adding a row to TOOLS.md.
-- Every new endpoint implements an EARS statement in FEATURES.md. Quote it in a comment.
-- Handle failed responses on the page. Never throw to the console.
-- Prefer the boring choice. Name any innovation token you spend in an ADR.
-- Small diffs. One concern per commit. Explain why in the message.
-
-## When unsure
-
-Ask, in a comment or in the chat, rather than guessing. Say what you could
-not verify.
+Root CLAUDE.md imports this file for Claude Code. VS Code Copilot uses the separate .github/copilot-instructions.md adapter. A location under /context alone is not a guarantee of automatic discovery.

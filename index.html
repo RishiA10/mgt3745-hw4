@@ -1,26 +1,53 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Entries</title>
+  <title>Member Availability | Dance Team Scheduler</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
 </head>
 <body>
   <main>
-    <h1>Entries</h1>
-    <p class="lede">Replace this heading and copy with your HW3 feature. Structure lives here; presentation in styles.css; behavior and data in app.js.</p>
+    <h1>Member Availability</h1>
+    <p>
+      Submit times when you are unavailable for practice.
+      Your availability is saved in this browser.
+    </p>
 
-    <form id="entry-form">
-      <label for="entry-text">New entry</label>
-      <input id="entry-text" name="text" type="text" autocomplete="off" required>
-      <button type="submit">Save</button>
+    <form id="availability-form" novalidate>
+      <label for="date-input">Date</label>
+      <input id="date-input" name="date" type="date" required>
+
+      <label for="start-time-input">Start time</label>
+      <input id="start-time-input" name="startTime" type="time" required>
+
+      <label for="end-time-input">End time</label>
+      <input id="end-time-input" name="endTime" type="time" required>
+
+      <label for="reason-input">Academic conflict or reason (optional)</label>
+      <input
+        id="reason-input"
+        name="reason"
+        type="text"
+        maxlength="200"
+        aria-describedby="reason-help"
+        autocomplete="off"
+      >
+      <p id="reason-help">
+        For example: exam, class, interview preparation, or another commitment.
+      </p>
+
+      <button type="submit">Add Availability</button>
+
+      <p id="form-error" role="alert"></p>
     </form>
 
-    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <p id="save-status" role="status" aria-live="polite"></p>
 
-    <ul id="entry-list" aria-label="Saved entries"></ul>
+    <h2>Submitted Availability</h2>
+    <p id="empty-state">No availability submitted yet.</p>
+    <ul id="availability-list" aria-label="Submitted availability"></ul>
   </main>
-  <script src="app.js"></script>
 </body>
 </html>

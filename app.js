@@ -1,90 +1,121 @@
-// app.js
-// Behavior and data. Three functions: load, save, render. Same shape as HW3.
-// What changed in HW4 is where load and save go: two lines, plus what
-// happens when they fail. Everything else that changes is a consequence of
-// those two lines, and that is what HW4 asks you to write down.
+(() => {
+  'use strict';
 
-// Paste your deployed Worker URL here after `npx wrangler deploy`.
-const API = "https://mgt3745-hw4.YOUR-SUBDOMAIN.workers.dev";
+  const storageKey = 'mgt3745.availability.v1';
 
-// ---- HW3, for the record (superseded by ADR-002) ------------------------
-// function load()      { return JSON.parse(localStorage.getItem("entries") || "[]"); }
-// function save(list)  { localStorage.setItem("entries", JSON.stringify(list)); }
-// -------------------------------------------------------------------------
+  const availabilityForm = document.querySelector('#availability-form');
+  const dateInput = document.querySelector('#date-input');
+  const startTimeInput = document.querySelector('#start-time-input');
+  const endTimeInput = document.querySelector('#end-time-input');
+  const reasonInput = document.querySelector('#reason-input');
+  const availabilityList = document.querySelector('#availability-list');
+  const formError = document.querySelector('#form-error');
+  const saveStatus = document.querySelector('#save-status');
+  const emptyState = document.querySelector('#empty-state');
 
-const form = document.getElementById("entry-form");
-const input = document.getElementById("entry-text");
-const list = document.getElementById("entry-list");
-const status = document.getElementById("status");
+  const simulateFailedSave = new URLSearchParams(window.location.search).has('failSave');
 
-function showError(message) {
-  // The user sees it on the page. Nothing is thrown in the console.
-  status.textContent = message;
-}
+  let availabilityEntries = loadAvailability();
 
-function clearError() {
-  status.textContent = "";
-}
+  function loadAvailability() {
+    try {
+      const storedText = window.localStorage.getItem(storageKey);
+      const parsed = storedText === null ? [] : JSON.parse(storedText);
 
-async function load() {
-  const res = await fetch(API + "/entries");
-  if (!res.ok) { showError("could not load entries"); return []; }
-  return res.json();
-}
+      if (!Array.isArray(parsed)) {
+        throw new Error('Unexpected stored data');
+      }
 
-async function save(entry) {
-  const res = await fetch(API + "/entries", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(entry),
-  });
-  if (!res.ok) {
-    // The Worker's 400 path sends a short reason in the body. Show it.
-    const reason = await res.text();
-    showError("could not save: " + (reason || res.status));
-    return false;
-  }
-  return true;
-}
-
-function render(entries) {
-  // Unchanged from HW3. textContent, never innerHTML.
-  // The server does not get to write HTML into your page either.
-  list.replaceChildren();
-  for (const entry of entries) {
-    const li = document.createElement("li");
-    const text = document.createElement("span");
-    text.textContent = entry.text;
-    const when = document.createElement("time");
-    when.textContent = entry.created_at || "";
-    li.append(text, when);
-    list.append(li);
-  }
-}
-
-async function refresh() {
-  clearError();
-  try {
-    render(await load());
-  } catch {
-    // The network itself failed (offline, DNS, CORS). fetch throws here.
-    showError("could not reach the server");
-  }
-}
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  clearError();
-  const entry = { text: input.value.trim() };
-  try {
-    const ok = await save(entry);
-    if (ok) {
-      input.value = "";
-      await refresh();
+      return parsed;
+    } catch {
+      saveStatus.textContent =
+        'Saved availability could not be read. Original storage was left unchanged.';
+      return [];
     }
-  } catch {
-    showError("could not reach the server");
   }
-});
 
-refresh();
+  function saveAvailability(nextEntries) {
+    try {
+      if (simulateFailedSave) {
+        throw new Error('Simulated write failure');
+      }
+
+      window.localStorage.setItem(storageKey, JSON.stringify(nextEntries));
+      return true;
+    } catch {
+      formError.textContent =
+        'Could not save. Your information is still here. Try again when storage is available.';
+      saveStatus.textContent = '';
+      return false;
+    }
+  }
+
+  function renderAvailability() {
+    availabilityList.replaceChildren();
+    emptyState.hidden = availabilityEntries.length > 0;
+
+    availabilityEntries.forEach(entry => {
+      const listItem = document.createElement('li');
+
+      const dateText = document.createElement('strong');
+      dateText.textContent = entry.date;
+
+      const timeText = document.createElement('span');
+      timeText.textContent = ` — ${entry.startTime} to ${entry.endTime}`;
+
+      listItem.append(dateText, timeText);
+
+      if (entry.reason) {
+        const reasonText = document.createElement('span');
+        reasonText.textContent = ` — ${entry.reason}`;
+        listItem.append(reasonText);
+      }
+
+      availabilityList.append(listItem);
+    });
+  }
+
+  availabilityForm.addEventListener('submit', event => {
+    event.preventDefault();
+
+    const date = dateInput.value;
+    const startTime = startTimeInput.value;
+    const endTime = endTimeInput.value;
+    const reason = reasonInput.value.trim();
+
+    formError.textContent = '';
+    saveStatus.textContent = '';
+
+    if (!date || !startTime || !endTime) {
+      formError.textContent = 'Enter a date, start time, and end time.';
+      return;
+    }
+
+    if (endTime <= startTime) {
+      formError.textContent = 'End time must be later than start time.';
+      return;
+    }
+
+    const nextEntry = {
+      date,
+      startTime,
+      endTime,
+      reason
+    };
+
+    const nextEntries = [...availabilityEntries, nextEntry];
+
+    if (!saveAvailability(nextEntries)) {
+      return;
+    }
+
+    availabilityEntries = nextEntries;
+    renderAvailability();
+
+    availabilityForm.reset();
+    dateInput.focus();
+    saveStatus.textContent = 'Availability saved in this browser.';
+  });
+
+  renderAvailability();
+})();
