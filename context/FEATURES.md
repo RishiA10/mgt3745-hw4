@@ -66,7 +66,8 @@ I used ChatGPT to help organize my findings and structure the specification. I d
 | Statement | HW3 verdict | HW4 verdict | Reason |
 |---|---|---|---|
 | Survive cleared cache | CANNOT TEST YET | CANNOT TEST YET | Entries are stored remotely in D1 rather than localStorage, but the exact private-browser test was blocked because the Codespaces forwarded page requires GitHub authentication. |
+| Reject missing required information | CANNOT TEST YET | PASS | In HW4, I tested the validation through the deployed Worker. A POST with missing required fields returned HTTP 400 and identified the missing date, start time, and end time. |
 | Server unreachable | N/A | CANNOT TEST YET | A network or Worker outage is a new server-backed failure mode. I have not intentionally taken the deployed service offline to test it. |
 | Server returns 500 | N/A | CANNOT TEST YET | The Worker contains a readable 500 error path, but I have not intentionally caused a production server failure to verify it end to end. |
 | Server returns 400 | N/A | PASS | I sent a POST request with missing required information. The deployed Worker returned HTTP 400 and named the missing date, start time, and end time. |
-| Second client writes to the same table | N/A | PASS | I submitted an entry through the browser page and then used curl as a separate client to GET the deployed Worker. The response included both the existing D1 entry and the new browser-submitted entry. |
+| Second client writes to the same table | N/A | PASS | I created the Exam preparation entry through curl and later created the Study Session entry through the browser page. A GET request to the deployed Worker returned both records from the same D1 table. |
