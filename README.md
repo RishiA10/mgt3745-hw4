@@ -1,23 +1,21 @@
-# Entries: Data Leaves the Browser
-
-> Replace this title and every *italic prompt* with your own words. Six
-> sections, in this order: What, See It Work, How to Run, Status, Links,
-> AI Use. GitHub renders this page; it can show, not only tell.
+# Competitive Dance Availability: Data Leaves the Browser
 
 ## What
 
-*HW3 repository: [link it here](https://github.com/YOUR-USER/mgt3745-hw3)*
+Hw3 repository: [mgt3745-hw3](https://github.com/RishiA10/mgt3745-hw3)
 
-*One paragraph naming the problem, the user, and the feature, with links to
-[PROJECT.md](context/PROJECT.md) and [FEATURES.md](context/FEATURES.md).
-One sentence on where data now lives and why (ADR-002).*
+This project helps competitive dance team members communicate when academic responsibilities make them unavailable for pratice. The current feature allows a member to submit a date, start time, end time, and optional academic-conflict reason and view the submitted availability. The project context is documented in [PROJECT.md](context/PROJECT.md), and the requirements and acceptance statements are documented in [FEATURES.md](context/FEATURES.md).
+
+In HW3, availability was stored only in browser localStorage. In HW4, entries leave the browser through a Cloudflare worker and are stoed in Cloudflare D1 so persistence is not tied to one browser's local storage. This architecture decision is documented in [ADR-002](context/ARCHITECTURE.md#adr-002-entries-move-from-localstorage-to-cloudflare-d1).
 
 ## See It Work
 
 *A GIF or screenshot in `/docs` showing an entry surviving a cleared cache
 or appearing in a second browser. Evidence and storefront at once.*
 
-![See it work](docs/see-it-work.gif)
+The page loads previously saved availability from the deployed Worker and D1 database. The entries shown below reamined available after restarting the page, and the same records were retrieved separately through the Worker API.
+
+![Member availability entries persisted remotely in D1](docs/see-it-work.png)
 
 ```mermaid
 flowchart LR
@@ -31,27 +29,28 @@ flowchart LR
 
 ## How to Run
 
-Deployed: *`https://mgt3745-hw4.YOUR-SUBDOMAIN.workers.dev/entries`*
+Deployed Worker: `https://mgt3745-hw4.rishia10.workers.dev/entries`
 
 From a fresh Codespace:
 
-1. Open the repository in a Codespace. The devcontainer installs xdg-utils and runs `npm install`.
-2. `npx wrangler login --device`, then follow [docs/SESSION_B_COMMANDS.md](docs/SESSION_B_COMMANDS.md)
-   to create the database, run the schema, and deploy.
-3. Paste the deployed URL into `app.js` as `API`.
-4. Right-click `index.html`, choose **Open with Live Server**.
+1. Open the repository in a Codespace and run `npm install`.
+2. Run `npx wrangler login --device` and authorize Cloudflare.
+3. Create/configure the D1 database if needed, apply `schema.sql`, and make sure the D1 binding in `wrangler.toml` is named `DB`.
+4. Run `npx wrangler deploy` to deploy the Worker.
+5. Start the webpage with `python3 -m http.server 8000` and open the forwarded port 8000 URL.
 
-To run the Worker locally instead: `npm run dev` (port 8787, local D1 emulator).
+The frontend in `app.js` sends GET and POST requests to the deployed Worker. To run the Worker locally instead, use `npm run dev`.
 
 ## Status
 
 | Feature | EARS statement | Verdict |
 |---|---|---|
-| *Save an entry* | *WHEN a valid entry is submitted, THE SYSTEM SHALL store it* | *PASS* |
-| *Reject empty entry* | *IF text is missing, THEN THE SYSTEM SHALL reject with a reason* | *PASS* |
-| *Survive cleared cache* | *THE SYSTEM SHALL return stored entries on any device* | *PASS* |
-| *Network down* | *IF the server is unreachable, THE SYSTEM SHALL tell the user* | *CANNOT TEST YET* |
-| *Two clients, one table* | *...* | *DEFERRED (ADR-002)* |
+| Save and display availability | When a member submits unavailable times, the system shall save and display the submitted availability. | PASS |
+| Reject missing information | If a member submits an availability entry with missing required information, then the system shall reject it and say why. | PASS |
+| Survive cleared cache | Stored entries should remain available independently of browser localStorage. | CANNOT TEST YET |
+| Server unreachable | If the server is unreachable, the page should visibly report the failure. | CANNOT TEST YET |
+| Server returns 500 | If the server fails, the Worker should return a readable server error. | CANNOT TEST YET |
+| Second client reads the same table | A separate client should be able to retrieve entries stored through the application. | PASS |
 
 *Full verification table lives in [FEATURES.md](context/FEATURES.md).*
 
@@ -65,7 +64,4 @@ Reading order for a stranger: [PROJECT.md](context/PROJECT.md) →
 
 ## AI Use
 
-*Three proto-DDR questions. What did the agent write? What did you check,
-and how? What could you not fully verify, and what did you do about it?
-For the Worker specifically: name the thing you could not fully inspect.
-Hours spent: ___.*
+I used ChatGPT as a guide throughout the assignment to help me organize my thoughts, understand the required steps, and troubleshoot problems as I worked. I made changes to the repository myself instead of copying AI-generated code directly into the project. I used AI to help me understand how the browser, Cloudflare Worker, and D1 database should connect and guide me through setup, deployment, and testing. I spent 10 hours on this assignment.

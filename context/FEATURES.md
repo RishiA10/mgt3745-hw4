@@ -1,10 +1,10 @@
 # Features and specification
 
 ## Context
-The situation, job, and desired progress: Competitive dance members must balance practices with academic responsibilities like coursework, exams, interview prep, etc. Interviews showed that practices can end later than expected, which reduces the time available for sleeping and studying even when students plan their academic work. The job is to help the team members coordinate academic constraints while protecting necessary academic preparation and sleep. The progress is a practice schedule that accounts for member availability and important academic conflicts while also letting the team meet competition and performance requirements. 
+The situation, job, and desired progress: Competitive dance members must balance practices with academic responsibilities like coursework, exams, interview prep, etc. Interviews showed that practices can end later than expected, which reduces the time available for sleeping and studying even when students plan their academic work. The job is to help the team members coordinate academic constraints while protecting necessary academic preparation and sleep. The progress is a practice schedule that accounts for member availability and important academic conflicts while also letting the team meet competition and performance requirements.
 
 ## Users
-Profiles and evidence in USERS.md: The primary users are competitive dance team members represented by PROFILE-01 and PROFILE-02 in USERS.md. PROFILE-01 shows a computer science student who plans coursework around dance but can also have problems when practices run late unexpectedly (INT-01, JOB-01). PROFILE-02 talks about a medical student whose exams and MCAT preparation create academic constraints that can conflict with late practices (INT-02, JOB-02). These profiles are based on two example interviews and are not assumed to represent every member of the team.  
+Profiles and evidence in USERS.md: The primary users are competitive dance team members represented by PROFILE-01 and PROFILE-02 in USERS.md. PROFILE-01 shows a computer science student who plans coursework around dance but can also have problems when practices run late unexpectedly (INT-01, JOB-01). PROFILE-02 talks about a medical student whose exams and MCAT preparation create academic constraints that can conflict with late practices (INT-02, JOB-02). These profiles are based on two example interviews and are not assumed to represent every member of the team.
 
 ## Scope
 Included behavior and explicit non-goals: The system allows team members to enter their availability and important academic conflicts, allows team leadership to enter practice requirements and important team dates, and uses that information to create and communicate a practice schedule. Members will be able to view scheduled practice times and change to those times. The system will also identify conflicts between submitted member availability and proposed practices so leadership can consider them before finalizing their schedules. The system will not decide whether a student's academics or dance commitments should take priority. It will not guarantee an exact practice end time when circumstances during practice require the team to continue longer.
@@ -45,11 +45,11 @@ Platform, data, privacy, scope, and relevant limits:
 
 ## Handoff reflection
 
-I reviewed the specification from the perspective of someone who was not involved in the interviews and found that the system still leaves team leadership responsible for resolving scheduling conflicts. I revised the specification to make clear that the system identifies conflicts but does not automatically prioritize academic or dance commitments. A remaining limitation is determining how far in advance members must submit availability and when a practice schedule should become final. 
+I reviewed the specification from the perspective of someone who was not involved in the interviews and found that the system still leaves team leadership responsible for resolving scheduling conflicts. I revised the specification to make clear that the system identifies conflicts but does not automatically prioritize academic or dance commitments. A remaining limitation is determining how far in advance members must submit availability and when a practice schedule should become final.
 
 ## AI assistance
 
-I used ChatGPT to help organize my findings and structure the specification. I did not use AI to create or invent interview evidence. 
+I used ChatGPT to help organize my findings and structure the specification. I did not use AI to create or invent interview evidence.
 
 ## Verification
 
@@ -65,8 +65,8 @@ I used ChatGPT to help organize my findings and structure the specification. I d
 
 | Statement | HW3 verdict | HW4 verdict | Reason |
 |---|---|---|---|
-| Survive cleared cache | CANNOT TEST YET | CANNOT TEST YET | Remote D1 storage makes this testable in HW4, but I have not yet completed the cleared-site-data browser test. |
+| Survive cleared cache | CANNOT TEST YET | CANNOT TEST YET | Entries are stored remotely in D1 rather than localStorage, but the exact private-browser test was blocked because the Codespaces forwarded page requires GitHub authentication. |
 | Server unreachable | N/A | CANNOT TEST YET | A network or Worker outage is a new server-backed failure mode. I have not intentionally taken the deployed service offline to test it. |
 | Server returns 500 | N/A | CANNOT TEST YET | The Worker contains a readable 500 error path, but I have not intentionally caused a production server failure to verify it end to end. |
 | Server returns 400 | N/A | PASS | I sent a POST request with missing required information. The deployed Worker returned HTTP 400 and named the missing date, start time, and end time. |
-| Second client writes to the same table | N/A | CANNOT TEST YET | D1 is now shared remote storage, but I have not yet completed the second-browser/client verification. |
+| Second client writes to the same table | N/A | PASS | I submitted an entry through the browser page and then used curl as a separate client to GET the deployed Worker. The response included both the existing D1 entry and the new browser-submitted entry. |
