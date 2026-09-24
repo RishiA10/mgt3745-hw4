@@ -109,5 +109,11 @@ async function handle(request, env) {
     headers: CORS
   });
 }
+if (request.method === "GET" && url.pathname === "/") {
+  return new Response("MGT 3745 HW4 Worker is running.", {
+    status: 200,
+    headers: CORS
+  });
+}
   return new Response("not found", { status: 404, headers: CORS });
 }
