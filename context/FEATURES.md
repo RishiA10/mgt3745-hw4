@@ -40,7 +40,7 @@ Platform, data, privacy, scope, and relevant limits:
 - Ubiquitous: When a member submits unavailable times, the system shall save and display the submitted availability.
 - Event-driven: When a proposed practice conflicts with submitted availability, the system shall identify the conflict for team leadership.
 - State-driven: While leadership finalizes a practice, the system shall display the practice date, time, and expected end time to team members.
-- Unwanted: If leadership changes a finalized practice time, then the system shall update the schedule and notify affected team members.
+- Unwanted: If a member submits an availability entry with missing required information, then the system shall reject it and say why.
 - Optional: Where a member updates their availability and it conflicts with a finalized practice, the system shall identify the conflict without automatically changing the practice.
 
 ## Handoff reflection
@@ -53,7 +53,7 @@ I used ChatGPT to help organize my findings and structure the specification. I d
 
 ## Verification
 
-- **PASS — Ubiquitous:** When a member submits unavailable times, the system shall save and display the submitted availability. I entered a date, start time, end time, and academic conflict. The entry appeared under Submitted Availability and remained after refreshing the page.
+- **PASS — Unwanted:** If a member submits an availability entry with missing required information, then the system shall reject it and say why. I sent a POST request with the required files missing. The deployed Worker returned HTTP 400 and the message "date, start time, and end time are required."
 
 - **CANNOT TEST YET — Event-driven:** When a proposed practice conflicts with submitted availability, the system shall identify the conflict for team leadership. The current feature does not include proposed practice entry or conflict detection.
 
@@ -62,3 +62,11 @@ I used ChatGPT to help organize my findings and structure the specification. I d
 - **CANNOT TEST YET — Unwanted:** If leadership changes a finalized practice time, then the system shall update the schedule and notify affected team members. Schedule changes and notifications are not implemented in the current feature.
 
 - **CANNOT TEST YET — Optional:** Where a member updates their availability and it conflicts with a finalized practice, the system shall identify the conflict without automatically changing the practice. Finalized practices and conflict detection are not implemented in the current feature.
+
+| Statement | HW3 verdict | HW4 verdict | Reason |
+|---|---|---|---|
+| Survive cleared cache | CANNOT TEST YET | CANNOT TEST YET | Remote D1 storage makes this testable in HW4, but I have not yet completed the cleared-site-data browser test. |
+| Server unreachable | N/A | CANNOT TEST YET | A network or Worker outage is a new server-backed failure mode. I have not intentionally taken the deployed service offline to test it. |
+| Server returns 500 | N/A | CANNOT TEST YET | The Worker contains a readable 500 error path, but I have not intentionally caused a production server failure to verify it end to end. |
+| Server returns 400 | N/A | PASS | I sent a POST request with missing required information. The deployed Worker returned HTTP 400 and named the missing date, start time, and end time. |
+| Second client writes to the same table | N/A | CANNOT TEST YET | D1 is now shared remote storage, but I have not yet completed the second-browser/client verification. |

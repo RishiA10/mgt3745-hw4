@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const storageKey = 'mgt3745.availability.v1';
+  const workerUrl = 'https://mgt3745-hw4.rishia10.workers.dev';
 
   const availabilityForm = document.querySelector('#availability-form');
   const dateInput = document.querySelector('#date-input');
@@ -15,40 +15,59 @@
 
   const simulateFailedSave = new URLSearchParams(window.location.search).has('failSave');
 
-  let availabilityEntries = loadAvailability();
+  let availabilityEntries = [];
 
-  function loadAvailability() {
-    try {
-      const storedText = window.localStorage.getItem(storageKey);
-      const parsed = storedText === null ? [] : JSON.parse(storedText);
+  async function loadAvailability() {
+  try {
+    const response = await fetch(`${workerUrl}/entries`);
 
-      if (!Array.isArray(parsed)) {
-        throw new Error('Unexpected stored data');
-      }
-
-      return parsed;
-    } catch {
-      saveStatus.textContent =
-        'Saved availability could not be read. Original storage was left unchanged.';
-      return [];
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`);
     }
-  }
 
-  function saveAvailability(nextEntries) {
-    try {
-      if (simulateFailedSave) {
-        throw new Error('Simulated write failure');
-      }
+    const entries = await response.json();
 
-      window.localStorage.setItem(storageKey, JSON.stringify(nextEntries));
-      return true;
-    } catch {
-      formError.textContent =
-        'Could not save. Your information is still here. Try again when storage is available.';
-      saveStatus.textContent = '';
-      return false;
+    if (!Array.isArray(entries)) {
+      throw new Error('Unexpected server data');
     }
+
+    availabilityEntries = entries;
+    renderAvailability();
+  } catch {
+    availabilityEntries = [];
+    renderAvailability();
+    saveStatus.textContent =
+      'Could not load saved availability. Try again when the server is available.';
   }
+}
+
+  async function saveAvailability(entry) {
+  try {
+    if (simulateFailedSave) {
+      throw new Error('Simulated network failure');
+    }
+
+    const response = await fetch(`${workerUrl}/entries`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(entry)
+    });
+
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(message || `Server returned ${response.status}`);
+    }
+
+    return true;
+  } catch {
+    formError.textContent =
+      'Could not save. Your information is still here. Try again when the server is available.';
+    saveStatus.textContent = '';
+    return false;
+  }
+}
 
   function renderAvailability() {
     availabilityList.replaceChildren();
@@ -75,7 +94,7 @@
     });
   }
 
-  availabilityForm.addEventListener('submit', event => {
+  availabilityForm.addEventListener('submit', async event => {
     event.preventDefault();
 
     const date = dateInput.value;
@@ -103,19 +122,19 @@
       reason
     };
 
-    const nextEntries = [...availabilityEntries, nextEntry];
+    const saved = await saveAvailability(nextEntry);
 
-    if (!saveAvailability(nextEntries)) {
+    if (!saved) {
       return;
     }
 
-    availabilityEntries = nextEntries;
+    availabilityEntries = [...availabilityEntries, nextEntry];
     renderAvailability();
 
     availabilityForm.reset();
     dateInput.focus();
-    saveStatus.textContent = 'Availability saved in this browser.';
+    saveStatus.textContent = 'Availability saved.';
   });
 
-  renderAvailability();
+  loadAvailability();
 })();

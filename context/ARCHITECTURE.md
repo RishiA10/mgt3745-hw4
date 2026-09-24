@@ -33,34 +33,58 @@ Inspectability received a weight of 5 because I need to understand and verify th
 
 Where should entries live now that they must survive a cleared cache?
 
+I kept the HW3 criteria and weights because cost, time, inspectability, switching cost, and fit to the specification still matter for this assignment. The major change is that browser-only persistence is no longer sufficient.
+
 | Criterion | Weight | Build (Worker + D1) | Buy (hosted BaaS) | Delegate (AI builder hosts it) |
-|---|---|---|---|---|
-| Cost to start |4 |5 |3 |5 |
-| Cost to maintain |3 |5 |3 |4 |
-| Time to working |4 |3 |4 |5 |
-| Inspectability |5 |5 |2 |3 |
-| Switching cost |2 | *scored from Session B experience* | | |
-| Fit to spec |5 |5 |3 |4 |
-| **Weighted total** | | | | |
+|---|---:|---:|---:|---:|
+| Cost to start | 4 | 5 | 3 | 5 |
+| Cost to maintain | 3 | 5 | 3 | 4 |
+| Time to working | 4 | 3 | 4 | 5 |
+| Inspectability | 5 | 5 | 2 | 3 |
+| Switching cost | 2 | 3 | 2 | 2 |
+| Fit to spec | 5 | 5 | 3 | 4 |
+| **Weighted total** | | **103** | **66** | **91** |
+
+The switching-cost score for Build is based on my actual migration experience rather than only an estimate. Moving from localStorage to Worker + D1 required changing the database schema, Worker routes, frontend persistence code, Cloudflare configuration, and deployment. The application code and SQL are still visible and portable, so I scored the switching cost as acceptable rather than poor. A hosted BaaS or AI-hosted builder would add more platform-specific storage or hosting dependencies, so I scored those alternatives lower.
+
+The Build option remains the strongest fit for the assignment because it has no required monetary cost, keeps the server logic inspectable in this repository, and directly satisfies the requirement that entries leave the browser and persist remotely.
 
 ## ADR-002: Entries move from localStorage to Cloudflare D1
 
-**Status:** Proposed
-**Supersedes:** ADR-001
+**Status:** Accepted  
+**Supersedes:** ADR-002
 
 ### Context
-What data leaves the browser, to which vendor, under what terms, and who is accountable.
+
+HW3 stored member availability in browser localStorage. That no longer meets the requirement because clearing browser site data removes the entries and another client cannot access the same stored data.
+
+The data now leaving the browser consists of the availability date, start time, end time, and optional academic-conflict reason entered by the user. The browser sends those values to a Cloudflare Worker, and the Worker stores them in Cloudflare D1. Cloudflare may also receive request metadata associated with the request. This use is subject to the Cloudflare terms that apply to the account and services.
+
+I am accountable for deciding what the application sends, keeping unnecessary information out of the database, configuring the Worker and D1 binding, and verifying the behavior of the deployed system.
 
 ### Decision
 
+Store availability entries in Cloudflare D1 and access them through a Cloudflare Worker. The browser will use `fetch()` to GET and POST entries rather than reading from or writing to localStorage. The Worker will validate required input before inserting it and will use parameter binding for user-provided values.
+
 ### Alternatives considered
 
+A hosted backend-as-a-service could provide remote persistence with less custom server code, but it would introduce another service abstraction and make the implementation less directly inspectable for this assignment.
+
+Delegating the application and hosting to an AI builder could reduce initial implementation time, but it would make the generated backend and hosting decisions less transparent and could increase the work required to move the application later.
+
+Keeping localStorage was also considered, but it no longer satisfies the requirement that entries survive cleared browser storage and be available beyond one browser.
+
 ### Consequences
-At least one thing that got harder.
+
+Availability now survives independently of browser localStorage and can be read from another client that reaches the same Worker and D1 database.
+
+The system is also more complicated. Saving and loading now depend on a network request, the deployed Worker, the D1 database, and correct Cloudflare configuration. Network failures and server errors are new failure modes that the page must handle visibly. Database schema changes and deployment are also additional maintenance steps that did not exist with localStorage.
+
+The current implementation also does not provide authentication or per-user access control, so the stored availability should remain limited to the information needed for this assignment.
 
 ### Revisit trigger
-```
 
+Revisit this decision if the application requires authentication, per-member authorization, stronger privacy controls, substantially different scale or cost requirements, or a move away from Cloudflare.
 
 ## ADR-001
 

@@ -1,8 +1,11 @@
 -- schema.sql
--- One table, because your HW3 feature stores one kind of thing.
--- A second table is ADR-003 territory.
+-- Stores member availability entries in Cloudflare D1. 
 CREATE TABLE IF NOT EXISTS entries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  text TEXT NOT NULL,
+  date TEXT NOT NULL,
+  start_time TEXT NOT NULL,
+  end_time TEXT NOT NULL,
+  reason TEXT,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
+
 );

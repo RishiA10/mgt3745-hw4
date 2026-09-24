@@ -51,27 +51,63 @@ async function handle(request, env) {
   }
 
   if (request.method === "GET" && url.pathname === "/entries") {
-    const { results } = await env.DB.prepare(
-      "SELECT * FROM entries ORDER BY id").all();
-    return Response.json(results, { headers: CORS });
-  }
+  const { results } = await env.DB.prepare(
+    `SELECT
+      id,
+      date,
+      start_time AS startTime,
+      end_time AS endTime,
+      reason,
+      created_at AS createdAt
+    FROM entries
+    ORDER BY id`
+  ).all();
+
+  return Response.json(results, { headers: CORS });
+}
 
   if (request.method === "POST" && url.pathname === "/entries") {
-    let body;
-    try {
-      body = await request.json();
-    } catch {
-      return new Response("body must be JSON", { status: 400, headers: CORS });
-    }
-    if (!body.text) {
-      return new Response("text required", { status: 400, headers: CORS });
-    }
-    // HW4 Part 3: add one more validation rule here that traces to an
-    // EARS unwanted-behavior statement in your FEATURES.md.
-    await env.DB.prepare("INSERT INTO entries (text) VALUES (?)")
-      .bind(body.text).run();
-    return new Response(null, { status: 201, headers: CORS });
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    return new Response("body must be JSON", {
+      status: 400,
+      headers: CORS
+    });
   }
 
+  if (!body.date || !body.startTime || !body.endTime) {
+    return new Response(
+      "date, start time, and end time are required",
+      { status: 400, headers: CORS }
+    );
+  }
+
+  if (body.endTime <= body.startTime) {
+    return new Response(
+      "end time must be later than start time",
+      { status: 400, headers: CORS }
+    );
+  }
+
+  await env.DB.prepare(
+    `INSERT INTO entries (date, start_time, end_time, reason)
+     VALUES (?, ?, ?, ?)`
+  )
+    .bind(
+      body.date,
+      body.startTime,
+      body.endTime,
+      body.reason || ""
+    )
+    .run();
+
+  return new Response(null, {
+    status: 201,
+    headers: CORS
+  });
+}
   return new Response("not found", { status: 404, headers: CORS });
 }
