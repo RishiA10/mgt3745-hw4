@@ -43,7 +43,7 @@ async function handle(request, env) {
   }
 
   // The most common Session B failure: the D1 binding did not attach because
-  // wrangler.toml still says PASTE_ID_HERE or the id was pasted badly.
+  // The D1 binding may not be attached if the database ID is missing or incorrect.
   if (!env.DB) {
     return new Response(
       "server error: no D1 binding. Check database_id in wrangler.toml and redeploy.",
